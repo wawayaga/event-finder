@@ -1,23 +1,23 @@
 body {
-  background: #fafafa;
-  color: #333333;
+  background: #232323;
+  color: #7d7d7d;
   margin-top: 5rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #444444;
+  color: #E93578;
 }
 
-.bg-pink {
-  background-color: #f73d84;
+.bg-purple {
+  background-color: #3B1D8F;
 }
 
 .site-header .navbar-nav .nav-link {
-  color: #cbd5db;
+  color: #E93578;
 }
 
 .site-header .navbar-nav .nav-link:hover {
-  color: #ffffff;
+  color: #FEF67F;
 }
 
 .site-header .navbar-nav .nav-link.active {
@@ -33,7 +33,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .article-title {
-  color: #444444;
+  color: #FEF67F;
 }
 
 a.article-title:hover {
