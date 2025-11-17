@@ -40,8 +40,8 @@
         </header>
         <!-- Main section -->
         <main role="main" class="container pt-5">
-        <div class="row pt-3">
-            <div class="col-md-8">
+        <div class="row pt-5">
+            <div class="col">
             {% with messages = get_flashed_messages(with_categories=true) %} <!-- lets alerts show at top of content with categories (bootstrap class)-->
                 {% if messages %}
                     {% for category, message in messages %}
