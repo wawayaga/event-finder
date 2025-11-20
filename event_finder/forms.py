@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField #wtforms is a package
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField #wtforms is a package
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError #DataRequired is a class we are importing
 from flask_wtf.file import FileField, FileAllowed
 from event_finder.models import User
@@ -51,3 +51,8 @@ class UpdateAccountForm(FlaskForm):
             email = User.query.filter_by(email=email.data).first()
             if email:
                 raise ValidationError('That email is taken. Please choose another one.')
+
+class PostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    submit = SubmitField('Post')
