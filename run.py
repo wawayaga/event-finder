@@ -1,4 +1,5 @@
-from event_finder import app
+from event_finder import app, db
+
 
 HOST = '0.0.0.0'
 PORT = '8080'

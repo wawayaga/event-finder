@@ -5,6 +5,7 @@ from flask import render_template, url_for, flash, redirect, request, abort
 from event_finder import app, db, bcrypt
 from event_finder.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from event_finder.models import User, Post
+from event_finder.geo import get_coordinates
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -90,7 +91,7 @@ def account():
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        post = Post(title=form.title.data, address=form.address.data, content=form.content.data, author=current_user)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
@@ -98,10 +99,13 @@ def new_post():
     return render_template('create_post.html', title='New Post',
                            form=form, legend='New Post')
 
-@app.route("/post/<int:post_id>") # route with a variable inside. With "int:" we specify what kind of variable are we expecting
+@app.route("/post/<int:post_id>", methods = ['GET']) # route with a variable inside. With "int:" we specify what kind of variable are we expecting
 def post(post_id):
     post = Post.query.get_or_404(post_id) #this new method returns a 404 if the post_id doesnt exist
-    return render_template('post.html', title= post.title, post=post)
+    address = post.address
+    lat = get_coordinates(address)[0]
+    lon = get_coordinates(address)[1]
+    return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon)
 
 @app.route("/post/<int:post_id>/update", methods = ['GET', 'POST'])
 @login_required
@@ -142,3 +146,17 @@ def user_posts(username):
         .order_by(Post.date_posted.desc())\
         .paginate(page=page, per_page=5)
     return render_template('user_posts.html', posts=posts, user=user)
+
+@app.route("/map_view>", methods = ['GET'])
+def map_page():
+    posts = Post.query.all()
+    list = []
+    for post in posts:
+        user = post.author
+        icon = url_for('static', filename='profile_pics/' + user.image_file)
+        address = post.address
+        title = post.title
+        lat = get_coordinates(address)[0]
+        lon = get_coordinates(address)[1]
+        list.append()
+        return render_template('map.html', lat=lat, lon=lon, title=title, icon=icon)

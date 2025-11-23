@@ -16,9 +16,11 @@
                         </div>
                     {% endif %}
                     <h2 class ="article-title">{{post.title}}</h2>
+                    <p class="article-content">Address: {{ post.address }}</p>
                     <p class="article-content">{{ post.content }}</p>
                 </div>
             </div>
+            <div id="map"></div>
         </article>
     <!-- Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -36,5 +38,21 @@
             </div>
             </div>
         </div>
-    </div>       
+    </div>
+    <script 
+    src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js">
+    </script>
+    <script>
+        const map = L.map('map').setView([{{ lat }}, {{ lon }}], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+    L.marker([{{ lat }}, {{ lon }}])
+        .addTo(map)
+        .openPopup();
+    </script>
 {% endblock content %}
