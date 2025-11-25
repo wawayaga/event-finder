@@ -32,9 +32,22 @@
                 const lon = post.longitude;
                 const title = post.title;
 
-                L.marker([lat, lon])
-                .addTo(map)
-                .bindPopup(`<p>${title}</p>`);        
+                const marker = L.marker([lat, lon])
+                .addTo(map);
+                marker.bindPopup(`<p>${title}</p>`);
+
+                marker.postData = post;
+                marker.on('click', function(e) {
+                    window.location.href = this.postData.url;
+                });
+
+                marker.on('mouseover', function(){
+                    this.openPopup();
+                });                
+
+                marker.on('mouseout', function(){
+                    this.closePopup();
+                });
             });
         </script>
     {% else %}
@@ -75,6 +88,5 @@
                 window.location.href = listUrl;              
             }
             });
-
     </script>
 {% endblock content %}

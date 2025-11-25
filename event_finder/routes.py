@@ -18,9 +18,11 @@ def home():
 
             posts_data = [
                 {
+                    "id": p.id,
                     "latitude": p.latitude,
                     "longitude": p.longitude,
-                    "title": p.title
+                    "title": p.title,
+                    "url": url_for('post', post_id=p.id)
                 }
                 for p in posts
             ]
@@ -183,18 +185,3 @@ def user_posts(username):
         .order_by(Post.date_posted.desc())\
         .paginate(page=page, per_page=5)
     return render_template('user_posts.html', posts=posts, user=user)
-
-@app.route("/map_view", methods = ['GET'])
-def map_view():
-
-    posts = Post.query.filter(Post.latitude != None, Post.longitude != None)
-
-    posts_data = [
-        {
-            "latitude": p.latitude,
-            "longitude": p.longitude,
-            "title": p.title
-        }
-        for p in posts
-    ]
-    return render_template('map.html', posts=posts_data)
