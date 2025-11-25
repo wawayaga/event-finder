@@ -79,6 +79,14 @@ a.article-title:hover {
   font-size: 2.5rem;
 }
 
+.event-photo {
+  height: 200px;
+  width: 300px;
+  margin-right: 20px;
+  margin-bottom: 16px;
+}
+
 #map {
     height: 500px;
-    width: 100%;}
+    width: 100%;
+  }

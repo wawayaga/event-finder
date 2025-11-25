@@ -12,9 +12,23 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route("/")
 @app.route("/home")
 def home():
-    page = request.args.get('page', 1, type=int) #1 is the default value for 1. type is the accepted data type as an input
-    posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
-    return render_template('home.html', posts=posts)
+    view = request.args.get("view", "list")
+    if view == "map":
+            posts = Post.query.filter(Post.latitude != None, Post.longitude != None)
+
+            posts_data = [
+                {
+                    "latitude": p.latitude,
+                    "longitude": p.longitude,
+                    "title": p.title
+                }
+                for p in posts
+            ]
+    else:
+
+        page = request.args.get('page', 1, type=int) #1 is the default value for 1. type is the accepted data type as an input
+        posts_data = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
+    return render_template('home.html', posts=posts_data, view=view)
 
 @app.route("/about")
 def about():
@@ -54,13 +68,25 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-def save_picture(form_picture):
+def save_profile_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename) #this method returns both, the file name and the file extension, but we are dropping the first one
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
     
     output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+    return picture_fn
+
+def save_event_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename) #this method returns both, the file name and the file extension, but we are dropping the first one
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/event_pics', picture_fn)
+    
+    output_size = (300, 200)
     i = Image.open(form_picture)
     i.thumbnail(output_size)
     i.save(picture_path)
@@ -73,7 +99,7 @@ def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
-            current_user.image_file = save_picture(form.picture.data)
+            current_user.image_file = save_profile_picture(form.picture.data)
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
@@ -84,14 +110,23 @@ def account():
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)    
     return render_template('account.html', title='Account',
-                           image_file = image_file, form=form)
+                           image_file=image_file, form=form)
 
 @app.route("/post/new", methods = ['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, address=form.address.data, content=form.content.data, author=current_user)
+        image=None #necessary?
+        if form.picture.data:
+            image = save_event_picture(form.picture.data)
+        #address = form.address.data
+        lat = get_coordinates(form.address.data)[0]
+        lon = get_coordinates(form.address.data)[1]
+        post = Post(title=form.title.data, address=form.address.data,
+                    latitude=lat, longitude=lon, event_date=form.event_date.data,
+                    duration_minutes=form.duration_minutes.data, image=image,
+                    content=form.content.data, author=current_user)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
@@ -102,9 +137,11 @@ def new_post():
 @app.route("/post/<int:post_id>", methods = ['GET']) # route with a variable inside. With "int:" we specify what kind of variable are we expecting
 def post(post_id):
     post = Post.query.get_or_404(post_id) #this new method returns a 404 if the post_id doesnt exist
-    address = post.address
-    lat = get_coordinates(address)[0]
-    lon = get_coordinates(address)[1]
+    lat = post.latitude
+    lon = post.longitude
+    if post.image:
+        image = url_for('static', filename='event_pics/' + post.image)
+        return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon, image=image)
     return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon)
 
 @app.route("/post/<int:post_id>/update", methods = ['GET', 'POST'])
@@ -147,16 +184,17 @@ def user_posts(username):
         .paginate(page=page, per_page=5)
     return render_template('user_posts.html', posts=posts, user=user)
 
-@app.route("/map_view>", methods = ['GET'])
-def map_page():
-    posts = Post.query.all()
-    list = []
-    for post in posts:
-        user = post.author
-        icon = url_for('static', filename='profile_pics/' + user.image_file)
-        address = post.address
-        title = post.title
-        lat = get_coordinates(address)[0]
-        lon = get_coordinates(address)[1]
-        list.append()
-        return render_template('map.html', lat=lat, lon=lon, title=title, icon=icon)
+@app.route("/map_view", methods = ['GET'])
+def map_view():
+
+    posts = Post.query.filter(Post.latitude != None, Post.longitude != None)
+
+    posts_data = [
+        {
+            "latitude": p.latitude,
+            "longitude": p.longitude,
+            "title": p.title
+        }
+        for p in posts
+    ]
+    return render_template('map.html', posts=posts_data)

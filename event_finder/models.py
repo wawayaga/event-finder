@@ -21,9 +21,29 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(255), nullable=True)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)    
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    event_date = db.Column(db.DateTime, nullable=True)
+    duration_minutes = db.Column(db.Integer, nullable=True)
+    image = db.Column(db.String(20), nullable=True, default='event_default.jpg')
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self): #this is a magic method. This one specifically specifies how a user object should be printed out
-        return f"Post('{self.title}', '{self.date_posted}')"
+        return f"Post('{self.title}', '{self.address}', '{self.event_date}')"
+    
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+
+    def __repr__(self):
+        return f"Category('{self.name}')"
+
+class SubCategory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True) #CHANGE LATER
+
+    def __repr__(self):
+        return f"SubCategory('{self.name}', '{self.category_id}')"

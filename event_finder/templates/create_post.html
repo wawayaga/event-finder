@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="content-section">
-        <form method="POST" action="">
+        <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <fieldset class="form-group"> <!-- bootstrap class to give nice shape to forms-->
                 <legend class="border-bottom mb-4"> <!-- grey line under legend. Btw, legend is a title for fieldsets-->
@@ -32,20 +32,59 @@
                         {% else %}
                             {{ form.address(class="form-control form-control-lg") }}
                         {% endif %}
-                </div>                 
+                </div>
                 <div class="form-group">
-                    {{ form.content.label(class="form-control-label") }}
-                    {% if  form.content.errors %}
-                        {{ form.content(class="form-control form-control-lg is-invalid") }}
+                    {{ form.event_date.label(class="form-control-label") }}
+                    {% if  form.event_date.errors %}
+                        {{ form.event_date(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.content.errors %}
+                        {% for error in form.event_date.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                         {% else %}
-                            {{ form.content(class="form-control form-control-lg") }}
+                            {{ form.event_date(class="form-control form-control-lg") }}
                         {% endif %}
-                </div>                           
+                </div>
+                <div class="form-group">
+                    {{ form.duration_minutes.label(class="form-control-label") }}
+                    {% if  form.duration_minutes.errors %}
+                        {{ form.duration_minutes(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.duration_minutes.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                        {% else %}
+                            {{ form.duration_minutes(class="form-control form-control-lg") }}
+                        {% endif %}
+                </div>
+                    <div class="form-group mb-2">
+                      {{ form.picture.label() }}
+                      <div class="mt-1">
+                        {{ form.picture(class="form-control-file")}}
+                        {% if form.picture.errors %}
+                          <div>
+                            {% for error in form.picture.errors %}
+                              <span class="text-danger">{{ error }}</span></br>
+                            {% endfor %}
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>            
+                    <div class="form-group">
+                        {{ form.content.label(class="form-control-label") }}
+                        {% if  form.content.errors %}
+                            {{ form.content(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.content.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                            {% else %}
+                                {{ form.content(class="form-control form-control-lg") }}
+                            {% endif %}
+                    </div>                           
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}

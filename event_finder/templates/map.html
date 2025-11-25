@@ -3,6 +3,7 @@
 <div class="section pb-2">
     <h1> Map View </h1>
 </div>
+<div>{{ posts }}</div>
 <div id="map"></div>
 
 <!-- Leaflet JS -->
@@ -12,35 +13,24 @@
 
 <script>
     // Initialize map (centered at lat, lon with zoom level)
-
-    const map = L.map('map').setView([{{ lat }}, {{ lon }}], 13);
-    var myIcon = L.icon({
-        iconUrl: "{{ icon }}",
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40]})
+    const map = L.map('map').setView([52.519988698413464, 13.405002043621247], 11); // 
 
     // Add OSM tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
         attribution:
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-   // Customized icon marker
-    // L.marker([{{ lat }}, {{ lon }}], {icon: myIcon })
-    //     .addTo(map)
-    //     .bindPopup("{{ title }}")
-    //     .openPopup();
+    const posts = {{ posts | tojson }};
 
-    // Icon inside marker, ideal to add more details
-    L.marker([{{ lat }}, {{ lon }}])
+    posts.forEach(post => {
+        const lat = post.latitude;
+        const lon = post.longitude;
+        const title = post.title;
+
+        L.marker([lat, lon])
         .addTo(map)
-        .bindPopup(`
-            <div>
-            <img src="{{ icon }}" width="50" style="border-radius:8px;">
-            <p>{{ title }}</p>
-            </div>`)
-        .openPopup();
+        .bindPopup(`<p>${title}</p>`);        
+    });
 </script>
     {% endblock content %}

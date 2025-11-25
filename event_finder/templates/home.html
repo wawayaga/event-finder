@@ -3,28 +3,78 @@
     <div class="section pb-2">
         <h1>Home Page</h1>
     </div>
-    {% for post in posts.items %}
-        <article class="media content-section">
-            <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
-            <div class="media-body">
-                <div class="article-metadata">
-                    <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
-                    <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d')}}</small>
-                    <h2><a class ="article-title" href="{{ url_for('post', post_id=post.id) }}">{{post.title}}</a></h2>
-                    <p class="article-content">{{ post.content }}</p>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="viewSwitch" {% if view == 'map' %} checked {% endif %}>
+        <label class="form-check-label" for="viewSwitch">Switch view</label>
+    </div>
+    {% if view == 'map' %}
+        <div id="map"></div>
+
+        <!-- Leaflet JS -->
+        <script 
+            src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js">
+        </script>
+
+        <script>
+            // Initialize map (centered at lat, lon with zoom level)
+            const map = L.map('map').setView([52.519988698413464, 13.405002043621247], 11); // 
+
+            // Add OSM tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution:
+                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            const posts = {{ posts | tojson }};
+
+            posts.forEach(post => {
+                const lat = post.latitude;
+                const lon = post.longitude;
+                const title = post.title;
+
+                L.marker([lat, lon])
+                .addTo(map)
+                .bindPopup(`<p>${title}</p>`);        
+            });
+        </script>
+    {% else %}
+        {% for post in posts.items %}
+            <article class="media content-section">
+                <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+                <div class="media-body">
+                    <div class="article-metadata">
+                        <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
+                        <small class="text-muted">{{ post.date_posted.strftime('%d-%m-%Y')}}</small>
+                        <h2><a class ="article-title" href="{{ url_for('post', post_id=post.id) }}">{{post.title}}</a></h2>
+                        <p class="article-content">{{ post.content }}</p>
+                    </div>
                 </div>
-            </div>
-       </article>
-    {% endfor %}
-    {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %} <!-- this creates a sequence of numbers and ellipsis according to what the parameters of the function indicate -->
-        {% if page_num%}
-            {% if posts.page == page_num %} <!-- if current page is equal to page in our loop -->
-                <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+        </article>
+        {% endfor %}
+        {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %} <!-- this creates a sequence of numbers and ellipsis according to what the parameters of the function indicate -->
+            {% if page_num%}
+                {% if posts.page == page_num %} <!-- if current page is equal to page in our loop -->
+                    <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+                {% else %}
+                    <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+                {% endif %}
             {% else %}
-                <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num)}}">{{ page_num }}</a>
+                ...
             {% endif %}
-        {% else %}
-            ...
-        {% endif %}
-    {% endfor %} 
+        {% endfor %}
+    {% endif %}
+    <script>
+
+        const viewSwitch = document.getElementById("viewSwitch");
+        const mapUrl = "{{ url_for('home', view='map') }}";
+        const listUrl = "{{ url_for('home', view='list') }}";
+        viewSwitch.addEventListener('change', event => {
+            if (viewSwitch.checked) {
+                window.location.href = mapUrl;
+            } else {
+                window.location.href = listUrl;              
+            }
+            });
+
+    </script>
 {% endblock content %}
