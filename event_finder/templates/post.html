@@ -8,12 +8,12 @@
             <div class="media-body col-6">
                 <div class="article-metadata">
                     <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
-                    <small class="text-muted">{{post.date_posted.strftime('%d-%m-%Y')}}</small>
+                    <small class="text-muted">{{post.date_posted.strftime('%d-%m-%Y %H:%M')}}</small>
                     <h2 class ="article-title">{{post.title}}</h2>
                     <p class="article-content">At {{ post.address }}</p>
                     {% if post.event_date and post.duration_minutes and post.image %}
                         <img class="event-photo" src="{{ image }}">                    
-                        <p class="article-content">When: {{ post.event_date }}, Duration: {{ post.duration_minutes }}</p>
+                        <p class="article-content">When: {{ post.event_date.strftime('%d-%m-%Y %H:%M') }}, Duration: {{ duration_hours }}h {{ duration_mins }}m</p>
                     {% endif%}
                     <p class="article-content">{{ post.content }}</p>
                 </div>

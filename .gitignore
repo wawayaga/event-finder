@@ -8,3 +8,12 @@ env/
 # IDE and editor files
 .vscode/
 .idea/
+
+#others
+instance/*
+migrations/*
+**event_pics/*
+**profile_pics/
+static/EFLogo.png
+
+

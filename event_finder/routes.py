@@ -3,34 +3,51 @@ import os
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from event_finder import app, db, bcrypt
-from event_finder.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
+from event_finder.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, PostFilterForm
 from event_finder.models import User, Post
 from event_finder.geo import get_coordinates
 from flask_login import login_user, current_user, logout_user, login_required
 
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home/")
 def home():
-    view = request.args.get("view", "list")
-    if view == "map":
-            posts = Post.query.filter(Post.latitude != None, Post.longitude != None)
+    view = request.args.get('view', 'list')
+    form = PostFilterForm(request.args)    
+    query = Post.query
 
-            posts_data = [
+    if form:
+
+        if form.title_word.data:
+            query = query.filter(Post.title.ilike(f"%{form.title_word.data}%"))
+        if form.city.data:
+            query = query.filter(Post.address.ilike(f"%{form.city.data}%"))
+        if form.category.data:
+            query = query.filter_by(category=form.category.data)
+#        if subcategory.data:
+#            query = query.filter_by(subcategory=form.subcategory.data)
+
+    if view == "map":
+
+            query = query.filter(Post.latitude != None, Post.longitude != None)
+            posts = query.all()
+
+            results = [
                 {
                     "id": p.id,
                     "latitude": p.latitude,
                     "longitude": p.longitude,
                     "title": p.title,
+                    "address": p.address,
+                    "event_date": p.event_date,
                     "url": url_for('post', post_id=p.id)
                 }
                 for p in posts
             ]
     else:
-
         page = request.args.get('page', 1, type=int) #1 is the default value for 1. type is the accepted data type as an input
-        posts_data = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
-    return render_template('home.html', posts=posts_data, view=view)
+        results = query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
+    return render_template('home.html', posts=results, view=view, form=form)
 
 @app.route("/about")
 def about():
@@ -141,10 +158,12 @@ def post(post_id):
     post = Post.query.get_or_404(post_id) #this new method returns a 404 if the post_id doesnt exist
     lat = post.latitude
     lon = post.longitude
+    duration_hours = post.duration_minutes // 60
+    duration_mins = post.duration_minutes % 60
     if post.image:
         image = url_for('static', filename='event_pics/' + post.image)
-        return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon, image=image)
-    return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon)
+        return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon, image=image, duration_hours=duration_hours, duration_mins=duration_mins)
+    return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon, duration_hours=duration_hours, duration_mins=duration_mins)
 
 @app.route("/post/<int:post_id>/update", methods = ['GET', 'POST'])
 @login_required
@@ -154,14 +173,22 @@ def update_post(post_id):
         abort(403) #http response for forbidden route
     form = PostForm()
     if form.validate_on_submit():
+        if form.picture.data:
+            post.image = save_event_picture(form.picture.data)
         post.title = form.title.data
         post.content = form.content.data
+        post.address = form.address.data
+        post.event_date = form.event_date.data
+        post.duration_minutes = form.duration_minutes.data
         db.session.commit() # here we dont use db.session.add because we are not creating new data, but updating it
         flash('Your post was updated!', 'success')
         return redirect(url_for('post', post_id=post.id))
     elif request.method == 'GET':
         form.title.data = post.title
         form.content.data = post.content
+        form.address.data = post.address
+        form.event_date.data = post.event_date
+        form.duration_minutes.data = post.duration_minutes
     return render_template('create_post.html', title='Update Post',
                            form=form, legend='Update Post')
 

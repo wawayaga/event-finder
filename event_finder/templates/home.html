@@ -7,6 +7,16 @@
         <input class="form-check-input" type="checkbox" role="switch" id="viewSwitch" {% if view == 'map' %} checked {% endif %}>
         <label class="form-check-label" for="viewSwitch">Switch view</label>
     </div>
+    <form method="GET" action="{{ url_for('home')}}">
+         <input type="hidden" name="view" value="{{ view }}">
+            {{ form.title_word.label(class="form-control-label") }}
+            {{ form.title_word(class="form-control form-control-sm") }}
+            {{ form.city.label(class="form-control-label") }}
+            {{ form.city(class="form-control form-control-sm") }}
+            {{ form.category.label(class="form-control-label") }}
+            {{ form.category(class="form-control form-control-sm") }}
+            {{ form.submit(class="btn btn-outline-info") }}
+    </form>
     {% if view == 'map' %}
         <div id="map"></div>
 
@@ -34,7 +44,10 @@
 
                 const marker = L.marker([lat, lon])
                 .addTo(map);
-                marker.bindPopup(`<p>${title}</p>`);
+                marker.bindPopup(
+                    `<h6>${title}</h6>
+                    <p>${post.address}</p>
+                    <small>${post.event_date}</small>`);
 
                 marker.postData = post;
                 marker.on('click', function(e) {
@@ -79,13 +92,16 @@
     <script>
 
         const viewSwitch = document.getElementById("viewSwitch");
-        const mapUrl = "{{ url_for('home', view='map') }}";
-        const listUrl = "{{ url_for('home', view='list') }}";
+        const url = new URL(window.location);
+
         viewSwitch.addEventListener('change', event => {
+            
             if (viewSwitch.checked) {
-                window.location.href = mapUrl;
+                url.searchParams.set("view", "map");
+                window.location = url.toString();
             } else {
-                window.location.href = listUrl;              
+                url.searchParams.set("view", "list");
+                window.location = url.toString();      
             }
             });
     </script>
