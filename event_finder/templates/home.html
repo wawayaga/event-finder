@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="section pb-2">
-        <h1>Home Page</h1>
+        <h1>Search your event</h1>
     </div>
     <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" role="switch" id="viewSwitch" {% if view == 'map' %} checked {% endif %}>
@@ -9,16 +9,29 @@
     </div>
     <form method="GET" action="{{ url_for('home')}}">
          <input type="hidden" name="view" value="{{ view }}">
-            {{ form.title_word.label(class="form-control-label") }}
-            {{ form.title_word(class="form-control form-control-sm") }}
-            {{ form.city.label(class="form-control-label") }}
-            {{ form.city(class="form-control form-control-sm") }}
-            {{ form.category.label(class="form-control-label") }}
-            {{ form.category(class="form-control form-control-sm") }}
-            {{ form.submit(class="btn btn-outline-info") }}
+         <div class="row g-2">
+            <div class="col-md-3 ">            
+                {{ form.title_word.label(class="form-control-label") }}
+                {{ form.title_word(class="form-control") }}
+            </div>
+            <div class="col-md-3 ">
+                {{ form.city.label(class="form-control-label") }}
+                {{ form.city(class="form-control") }}
+            </div>
+            <div class="col-md-3 ">
+                {{ form.category.label(class="form-control-label") }}
+                {{ form.category(class="form-control") }}
+            </div>
+            <div class="col-md-3 pt-4">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+         </div>
     </form>
     {% if view == 'map' %}
+    <div class="py-3">
         <div id="map"></div>
+    </div>
+
 
         <!-- Leaflet JS -->
         <script 
@@ -64,6 +77,7 @@
             });
         </script>
     {% else %}
+    <div class="py-3">
         {% for post in posts.items %}
             <article class="media content-section">
                 <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
@@ -89,6 +103,7 @@
             {% endif %}
         {% endfor %}
     {% endif %}
+    </div>
     <script>
 
         const viewSwitch = document.getElementById("viewSwitch");

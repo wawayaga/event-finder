@@ -57,13 +57,38 @@ class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     address = StringField('Address', validators=[DataRequired()])
     event_date = DateTimeLocalField('Date and Time', format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
-    duration_minutes = IntegerField('Duration', validators=[DataRequired(), NumberRange(min=1, max=1440)])
+    duration_minutes = IntegerField('Duration (min)', validators=[DataRequired(), NumberRange(min=1, max=1440)])
     picture = FileField('Upload a picture of your event', validators=[FileAllowed(['jpg', 'png'])])
-    content = TextAreaField('Content', validators=[DataRequired()])
+    content = TextAreaField('Description', validators=[DataRequired()])
+    category = SelectField(choices=[(0, 'All'),
+        (1, 'Arts and crafts'),
+        (2, 'Boardgames'),
+        (3, 'Dancing'),
+        (4, 'Demo'),
+        (5, 'Food'),
+        (6, 'Meetup'),
+        (7, 'Music'),
+        (8, 'Party'),
+        (9, 'Soliparty'),
+        (10, 'Sports'),
+        (11, 'Tandem'),
+        (12, 'Other')], coerce=int)
     submit = SubmitField('Post')
 
 class PostFilterForm(FlaskForm):
     title_word = StringField('Word in Title')
     city = StringField('City')
-    category = SelectField(choices=[('', 'All'), ('music', 'Music'), ('sports', 'Sports')])
+    category = SelectField(choices=[(0, 'All'),
+        (1, 'Arts and crafts'),
+        (2, 'Boardgames'),
+        (3, 'Dancing'),
+        (4, 'Demo'),
+        (5, 'Food'),
+        (6, 'Meetup'),
+        (7, 'Music'),
+        (8, 'Party'),
+        (9, 'Soliparty'),
+        (10, 'Sports'),
+        (11, 'Tandem'),
+        (12, 'Other')], coerce=int)
     submit = SubmitField()

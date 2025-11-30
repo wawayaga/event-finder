@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from event_finder import app, db, bcrypt
 from event_finder.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, PostFilterForm
-from event_finder.models import User, Post
+from event_finder.models import User, Post, Category
 from event_finder.geo import get_coordinates
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -23,7 +23,7 @@ def home():
         if form.city.data:
             query = query.filter(Post.address.ilike(f"%{form.city.data}%"))
         if form.category.data:
-            query = query.filter_by(category=form.category.data)
+            query = query.filter_by(category_id=form.category.data)
 #        if subcategory.data:
 #            query = query.filter_by(subcategory=form.subcategory.data)
 
@@ -136,16 +136,16 @@ def account():
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        image=None #necessary?
+        image=None
         if form.picture.data:
             image = save_event_picture(form.picture.data)
-        #address = form.address.data
+        category = form.category.data
         lat = get_coordinates(form.address.data)[0]
         lon = get_coordinates(form.address.data)[1]
         post = Post(title=form.title.data, address=form.address.data,
                     latitude=lat, longitude=lon, event_date=form.event_date.data,
                     duration_minutes=form.duration_minutes.data, image=image,
-                    content=form.content.data, author=current_user)
+                    content=form.content.data, category_id=category, author=current_user)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
@@ -180,6 +180,7 @@ def update_post(post_id):
         post.address = form.address.data
         post.event_date = form.event_date.data
         post.duration_minutes = form.duration_minutes.data
+        post.category_id = form.category.data
         db.session.commit() # here we dont use db.session.add because we are not creating new data, but updating it
         flash('Your post was updated!', 'success')
         return redirect(url_for('post', post_id=post.id))

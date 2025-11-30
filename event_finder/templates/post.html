@@ -5,28 +5,32 @@
     </div>
         <article class="media content-section">
             <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
-            <div class="media-body col-6">
-                <div class="article-metadata">
-                    <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
-                    <small class="text-muted">{{post.date_posted.strftime('%d-%m-%Y %H:%M')}}</small>
-                    <h2 class ="article-title">{{post.title}}</h2>
-                    <p class="article-content">At {{ post.address }}</p>
-                    {% if post.event_date and post.duration_minutes and post.image %}
-                        <img class="event-photo" src="{{ image }}">                    
-                        <p class="article-content">When: {{ post.event_date.strftime('%d-%m-%Y %H:%M') }}, Duration: {{ duration_hours }}h {{ duration_mins }}m</p>
-                    {% endif%}
-                    <p class="article-content">{{ post.content }}</p>
-                </div>
-            </div>
-            <div class="col-6">
-                <div id="map"></div>
-            </div>
+            <div class="media-body">
+                <div class="article-metadata row">
+                    <div class="col-12 col-md-6">
+                        <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
+                        <small class="text-muted">{{post.date_posted.strftime('%d-%m-%Y %H:%M')}}</small>
+                        <h2 class ="article-title">{{post.title}}</h2>
+                        <p class="article-content">At {{ post.address }}</p>
+                        {% if post.event_date and post.duration_minutes and post.image %}
+                            <img class="event-photo" src="{{ image }}">                    
+                            <p class="article-content">When: {{ post.event_date.strftime('%d-%m-%Y %H:%M') }}, </br>Duration: {{ duration_hours }}h {{ duration_mins }}m</p>
+                        {% endif%}
+                        <p class="article-content"><strong>Description:</strong></br>{{ post.content }}</p>                    
+                    </div>
+                    <div class="col-12 col-md-6 align-content-center">
+                        <div id="map"></div>
                     {% if post.author == current_user %}
-                        <div>
-                            <a class="btn btn-secondary btn-sm my-1" href="{{ url_for('update_post', post_id=post.id)}}">Update</a>
-                            <button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                        <div class="d-flex align-items-end align-content-end flex-column px-3 pt-4">
+                            <div>
+                                <a class="btn btn-secondary btn-sm my-1" href="{{ url_for('update_post', post_id=post.id)}}">Update</a>
+                                <button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>                    
+                            </div>
                         </div>
                     {% endif %}
+                    </div>
+                </div>
+            </div>
         </article>
     <!-- Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">

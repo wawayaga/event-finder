@@ -17,6 +17,14 @@ class User(db.Model, UserMixin):
     def __repr__(self): #this is a magic method. This one specifically specifies how a user object should be printed out
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
     
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    posts = db.relationship('Post', backref='post_category', lazy=True)
+
+    def __repr__(self):
+        return f"Category('{self.name}')"
+    
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -28,22 +36,13 @@ class Post(db.Model):
     duration_minutes = db.Column(db.Integer, nullable=True)
     image = db.Column(db.String(20), nullable=True, default='event_default.jpg')
     content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+                        name='fk_author',
+                        nullable=False)
+    category_id = db.Column(db.Integer,
+                            db.ForeignKey('category.id'),
+                            name='fk_post_category',
+                            nullable=False)
 
     def __repr__(self): #this is a magic method. This one specifically specifies how a user object should be printed out
         return f"Post('{self.title}', '{self.address}', '{self.event_date}')"
-    
-class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
-
-    def __repr__(self):
-        return f"Category('{self.name}')"
-
-class SubCategory(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True) #CHANGE LATER
-
-    def __repr__(self):
-        return f"SubCategory('{self.name}', '{self.category_id}')"
