@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="section pb-2">
-        <h1> {{ (post.author.username + "'s Event") }} </h1>
+        <h1> {{ (post.author.username + "'s Quest") }} </h1>
     </div>
         <article class="media content-section">
             <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">

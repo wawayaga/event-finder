@@ -24,8 +24,6 @@ def home():
             query = query.filter(Post.address.ilike(f"%{form.city.data}%"))
         if form.category.data:
             query = query.filter_by(category_id=form.category.data)
-#        if subcategory.data:
-#            query = query.filter_by(subcategory=form.subcategory.data)
 
     if view == "map":
 
@@ -139,19 +137,18 @@ def new_post():
         image=None
         if form.picture.data:
             image = save_event_picture(form.picture.data)
-        category = form.category.data
         lat = get_coordinates(form.address.data)[0]
         lon = get_coordinates(form.address.data)[1]
         post = Post(title=form.title.data, address=form.address.data,
                     latitude=lat, longitude=lon, event_date=form.event_date.data,
                     duration_minutes=form.duration_minutes.data, image=image,
-                    content=form.content.data, category_id=category, author=current_user)
+                    content=form.content.data, category_id=form.category.data, author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post has been created!', 'success')
+        flash('Your quest has been created!', 'success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post',
-                           form=form, legend='New Post')
+                           form=form, legend='New Event')
 
 @app.route("/post/<int:post_id>", methods = ['GET']) # route with a variable inside. With "int:" we specify what kind of variable are we expecting
 def post(post_id):
@@ -182,7 +179,7 @@ def update_post(post_id):
         post.duration_minutes = form.duration_minutes.data
         post.category_id = form.category.data
         db.session.commit() # here we dont use db.session.add because we are not creating new data, but updating it
-        flash('Your post was updated!', 'success')
+        flash('Your quest was updated!', 'success')
         return redirect(url_for('post', post_id=post.id))
     elif request.method == 'GET':
         form.title.data = post.title
@@ -190,8 +187,8 @@ def update_post(post_id):
         form.address.data = post.address
         form.event_date.data = post.event_date
         form.duration_minutes.data = post.duration_minutes
-    return render_template('create_post.html', title='Update Post',
-                           form=form, legend='Update Post')
+    return render_template('create_post.html', title='Update Quest',
+                           form=form, legend='Update Quest')
 
 @app.route("/post/<int:post_id>/delete", methods = ['POST'])
 @login_required
@@ -201,7 +198,7 @@ def delete_post(post_id):
         abort(403)
     db.session.delete(post)
     db.session.commit()
-    flash('Your post was deleted!', 'success')
+    flash('Your quest was deleted!', 'success')
     return redirect(url_for('home'))
 
 

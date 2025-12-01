@@ -2,14 +2,39 @@ body {
   background: #F7A5A5;
   color: #1A2A4F;
   margin-top: 5rem;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: -1px;
 }
 
 h1, h2, h3, h4, h5, h6 {
   color: #1A2A4F;
 }
 
+.navbar-brand img {
+    max-width: 180px;
+    height: auto;
+}
+
 .navbar-bg {
-  background-color: #;
+  background-color: #F7A5A5;
+}
+
+/* 1. Remove border / outline */
+.navbar-toggler {
+    border: none;
+    background: transparent;
+    padding: 0.75rem;
+
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+/* 2. Custom hamburger icon color (#1a2a4f) */
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 25 25' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%231a2a4f' stroke-width='2' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    transition: transform 0.3s ease;
 }
 
 .site-header .navbar-nav .nav-link {
@@ -22,6 +47,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .site-header .navbar-nav .nav-link.active {
   font-weight: 500;
+}
+
+.blue-border-bottom {
+  border-bottom: 1px solid #1A2A4F;
 }
 
 .content-section {
@@ -84,6 +113,17 @@ a.article-title:hover {
   width: 300px;
   margin-right: 20px;
   margin-bottom: 16px;
+}
+
+.footer {
+  border-top: 1px solid #1A2A4F;
+}
+.footer .footer-link {
+  color:#1A2A4F;
+}
+
+.footer .footer-link a:hover {
+  color:#FEF67F;
 }
 
 #map {

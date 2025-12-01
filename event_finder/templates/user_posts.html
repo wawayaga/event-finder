@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="section pb-2">
-        <h1 class="mb-3"> Events by {{ user.username }} ({{ posts.total }})</h1>
+        <h1 class="mb-3"> Quests by {{ user.username }} ({{ posts.total }})</h1>
     </div>
     {% for post in posts.items %}
         <article class="media content-section">

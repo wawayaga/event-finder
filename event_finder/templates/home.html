@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="section pb-2">
-        <h1>Search your event</h1>
+        <h1>Search your Quest</h1>
     </div>
     <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" role="switch" id="viewSwitch" {% if view == 'map' %} checked {% endif %}>
@@ -23,7 +23,7 @@
                 {{ form.category(class="form-control") }}
             </div>
             <div class="col-md-3 pt-4">
-                {{ form.submit(class="btn btn-outline-info") }}
+                {{ form.submit(class="btn btn-info") }}
             </div>
          </div>
     </form>
@@ -84,9 +84,10 @@
                 <div class="media-body">
                     <div class="article-metadata">
                         <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
-                        <small class="text-muted">{{ post.date_posted.strftime('%d-%m-%Y')}}</small>
+                        <small class="text-muted">{{ post.date_posted.strftime('%d-%m-%Y %H:%M')}}</small>
                         <h2><a class ="article-title" href="{{ url_for('post', post_id=post.id) }}">{{post.title}}</a></h2>
                         <p class="article-content">{{ post.content }}</p>
+                        <span class="badge bg-light text-dark">{{ post.category.name }}</span>
                     </div>
                 </div>
         </article>
