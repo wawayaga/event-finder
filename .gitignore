@@ -10,10 +10,5 @@ env/
 .idea/
 
 #others
-instance/*
 migrations/*
-**event_pics/*
-**profile_pics/
-static/EFLogo.png
-
 

@@ -61,13 +61,13 @@ class PostForm(FlaskForm):
     picture = FileField('Upload a picture of your event', validators=[FileAllowed(['jpg', 'png'])])
     content = TextAreaField('Description', validators=[DataRequired()])
     category = SelectField(choices=[(0, 'All'),
-        (1, 'Arts and crafts'),
+        (7, 'Arts and crafts'),
         (2, 'Boardgames'),
         (3, 'Dancing'),
         (4, 'Demo'),
         (5, 'Food'),
         (6, 'Meetup'),
-        (7, 'Music'),
+        (1, 'Music'),
         (8, 'Party'),
         (9, 'Soliparty'),
         (10, 'Sports'),
@@ -79,13 +79,13 @@ class PostFilterForm(FlaskForm):
     title_word = StringField('Word in Title')
     city = StringField('City')
     category = SelectField(choices=[(0, 'All'),
-        (1, 'Arts and crafts'),
+        (7, 'Arts and crafts'),
         (2, 'Boardgames'),
         (3, 'Dancing'),
         (4, 'Demo'),
         (5, 'Food'),
         (6, 'Meetup'),
-        (7, 'Music'),
+        (1, 'Music'),
         (8, 'Party'),
         (9, 'Soliparty'),
         (10, 'Sports'),

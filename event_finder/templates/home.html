@@ -84,10 +84,12 @@
                 <div class="media-body">
                     <div class="article-metadata">
                         <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
-                        <small class="text-muted">{{ post.date_posted.strftime('%d-%m-%Y %H:%M')}}</small>
-                        <h2><a class ="article-title" href="{{ url_for('post', post_id=post.id) }}">{{post.title}}</a></h2>
+                        <small class="text-muted">{{ post.event_date.strftime('%d-%m-%Y %H:%M')}}</small>
+                        <div class="d-flex">
+                            <h2><a class ="article-title pe-3" href="{{ url_for('post', post_id=post.id) }}">{{post.title}}</a></h2>
+                            <span class="badge bg-light text-dark align-self-center">{{ post.category.name }}</span>                            
+                        </div>
                         <p class="article-content">{{ post.content }}</p>
-                        <span class="badge bg-light text-dark">{{ post.category.name }}</span>
                     </div>
                 </div>
         </article>

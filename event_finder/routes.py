@@ -15,7 +15,7 @@ def home():
     view = request.args.get('view', 'list')
     form = PostFilterForm(request.args)    
     query = Post.query
-
+#Query only future in the next 3 weeks
     if form:
 
         if form.title_word.data:
@@ -187,6 +187,7 @@ def update_post(post_id):
         form.address.data = post.address
         form.event_date.data = post.event_date
         form.duration_minutes.data = post.duration_minutes
+        form.category.data = post.category_id
     return render_template('create_post.html', title='Update Quest',
                            form=form, legend='Update Quest')
 
