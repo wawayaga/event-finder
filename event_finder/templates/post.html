@@ -12,10 +12,12 @@
                         <small class="text-muted">{{post.date_posted.strftime('%d-%m-%Y %H:%M')}}</small>
                         <h2 class ="article-title">{{post.title}}</h2>
                         <p class="article-content">At {{ post.address }}</p>
-                        {% if post.event_date and post.duration_minutes and post.image %}
-                            <img class="event-photo" src="{{ image }}">                    
-                            <p class="article-content">When: {{ post.event_date.strftime('%d-%m-%Y %H:%M') }}, </br>Duration: {{ duration_hours }}h {{ duration_mins }}m</p>
-                        {% endif%}
+                        <img class="event-photo" src="{{ image }}">                 
+                        <p class="article-content">When: {{ post.event_date.strftime('%d-%m-%Y %H:%M') }}, 
+                                {% if duration_hours and duration_mins %}
+                                    </br>Duration: {{ duration_hours }}h {{ duration_mins }}m
+                                {% endif %}
+                        </p>
                         <p class="article-content"><strong>Description:</strong></br>{{ post.content }}</p>                    
                     </div>
                     <div class="col-12 col-md-6 align-content-center">

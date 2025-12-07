@@ -28,13 +28,13 @@ class Category(db.Model):
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    address = db.Column(db.String(255), nullable=True)
-    latitude = db.Column(db.Float, nullable=True)
-    longitude = db.Column(db.Float, nullable=True)    
+    address = db.Column(db.String(255), nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)    
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    event_date = db.Column(db.DateTime, nullable=True)
+    event_date = db.Column(db.DateTime, nullable=False)
     duration_minutes = db.Column(db.Integer, nullable=True)
-    image = db.Column(db.String(20), nullable=True, default='event_default.jpg')
+    image = db.Column(db.String(20), nullable=False, default='event_default.jpg')
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
                         name='fk_author',

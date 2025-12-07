@@ -5,8 +5,9 @@ from flask import render_template, url_for, flash, redirect, request, abort
 from event_finder import app, db, bcrypt
 from event_finder.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, PostFilterForm
 from event_finder.models import User, Post, Category
-from event_finder.geo import get_coordinates
+#from event_finder.geo import get_coordinates
 from flask_login import login_user, current_user, logout_user, login_required
+from geopy.geocoders import Nominatim
 
 
 @app.route("/")
@@ -129,24 +130,38 @@ def account():
     return render_template('account.html', title='Account',
                            image_file=image_file, form=form)
 
+geolocator = Nominatim(user_agent="event_finder")
+
+def get_coordinates(address):
+    location = geolocator.geocode(address, country_codes="", addressdetails=True) #addressdetails include relevant details like 'city'
+    if location == None:
+        raise ValueError('Please enter an address in Germany')
+    lat = location.raw['lat']
+    lon = location.raw['lon']
+    return [lat, lon]
+
 @app.route("/post/new", methods = ['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        image=None
-        if form.picture.data:
-            image = save_event_picture(form.picture.data)
-        lat = get_coordinates(form.address.data)[0]
-        lon = get_coordinates(form.address.data)[1]
-        post = Post(title=form.title.data, address=form.address.data,
-                    latitude=lat, longitude=lon, event_date=form.event_date.data,
-                    duration_minutes=form.duration_minutes.data, image=image,
-                    content=form.content.data, category_id=form.category.data, author=current_user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your quest has been created!', 'success')
-        return redirect(url_for('home'))
+        try:
+            if form.picture.data:
+                image = save_event_picture(form.picture.data)
+            else:
+                image = None
+            lat = get_coordinates(form.address.data)[0]
+            lon = get_coordinates(form.address.data)[1]
+            post = Post(title=form.title.data, address=form.address.data,
+                        latitude=lat, longitude=lon, event_date=form.event_date.data,
+                        duration_minutes=form.duration_minutes.data, image=image,
+                        content=form.content.data, category_id=form.category.data, author=current_user)
+            db.session.add(post)
+            db.session.commit()
+            flash('Your quest has been created!', 'success')
+            return redirect(url_for('home'))
+        except ValueError as e:
+            flash(str(e), 'danger')
     return render_template('create_post.html', title='New Post',
                            form=form, legend='New Event')
 
@@ -155,12 +170,14 @@ def post(post_id):
     post = Post.query.get_or_404(post_id) #this new method returns a 404 if the post_id doesnt exist
     lat = post.latitude
     lon = post.longitude
-    duration_hours = post.duration_minutes // 60
-    duration_mins = post.duration_minutes % 60
-    if post.image:
-        image = url_for('static', filename='event_pics/' + post.image)
-        return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon, image=image, duration_hours=duration_hours, duration_mins=duration_mins)
-    return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon, duration_hours=duration_hours, duration_mins=duration_mins)
+    image = url_for('static', filename='event_pics/' + post.image)
+    if post.duration_minutes:
+        duration_hours = post.duration_minutes // 60
+        duration_mins = post.duration_minutes % 60
+    else:
+        duration_hours = None
+        duration_mins = None
+    return render_template('post.html', title=post.title, post=post, lat=lat, lon=lon, image=image, duration_hours=duration_hours, duration_mins=duration_mins)
 
 @app.route("/post/<int:post_id>/update", methods = ['GET', 'POST'])
 @login_required

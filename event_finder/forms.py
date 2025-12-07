@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, SelectField #wtforms is a package
 from wtforms.fields import DateTimeLocalField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange #DataRequired is a class we are importing
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange, Optional #DataRequired is a class we are importing
 from flask_wtf.file import FileField, FileAllowed
 from event_finder.models import User #only user is imported for validation purposes
 
@@ -57,7 +57,7 @@ class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     address = StringField('Address', validators=[DataRequired()])
     event_date = DateTimeLocalField('Date and Time', format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
-    duration_minutes = IntegerField('Duration (min)', validators=[DataRequired(), NumberRange(min=1, max=1440)])
+    duration_minutes = IntegerField('Duration (min)', validators=[Optional(), NumberRange(min=1, max=1440)])
     picture = FileField('Upload a picture of your event', validators=[FileAllowed(['jpg', 'png'])])
     content = TextAreaField('Description', validators=[DataRequired()])
     category = SelectField(choices=[(0, 'All'),
