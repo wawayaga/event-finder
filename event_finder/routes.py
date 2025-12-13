@@ -3,11 +3,10 @@ import os
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from event_finder import app, db, bcrypt
+from event_finder.utils import get_coordinates
 from event_finder.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, PostFilterForm
 from event_finder.models import User, Post, Category
-#from event_finder.geo import get_coordinates
 from flask_login import login_user, current_user, logout_user, login_required
-from geopy.geocoders import Nominatim
 
 
 @app.route("/")
@@ -16,15 +15,23 @@ def home():
     view = request.args.get('view', 'list')
     form = PostFilterForm(request.args)    
     query = Post.query
+    cc = None
 #Query only future in the next 3 weeks
+    if form.validate():  #validate is for GET method. Validate_on_submit is only for POST
+        current_coordinates = get_coordinates(form.current_address.data)
+        if current_coordinates:
+            cc = {
+                    "lat" : current_coordinates[0],
+                    "lon" : current_coordinates[1]
+                }
     if form:
-
         if form.title_word.data:
             query = query.filter(Post.title.ilike(f"%{form.title_word.data}%"))
         if form.city.data:
             query = query.filter(Post.address.ilike(f"%{form.city.data}%"))
         if form.category.data:
             query = query.filter_by(category_id=form.category.data)
+        
 
     if view == "map":
 
@@ -46,7 +53,7 @@ def home():
     else:
         page = request.args.get('page', 1, type=int) #1 is the default value for 1. type is the accepted data type as an input
         results = query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
-    return render_template('home.html', posts=results, view=view, form=form)
+    return render_template('home.html', posts=results, view=view, form=form, current_coordinates=cc)
 
 @app.route("/about")
 def about():
@@ -129,16 +136,6 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)    
     return render_template('account.html', title='Account',
                            image_file=image_file, form=form)
-
-geolocator = Nominatim(user_agent="event_finder")
-
-def get_coordinates(address):
-    location = geolocator.geocode(address, country_codes="", addressdetails=True) #addressdetails include relevant details like 'city'
-    if location == None:
-        raise ValueError('Please enter an address in Germany')
-    lat = location.raw['lat']
-    lon = location.raw['lon']
-    return [lat, lon]
 
 @app.route("/post/new", methods = ['GET', 'POST'])
 @login_required

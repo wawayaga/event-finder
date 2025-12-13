@@ -8,8 +8,24 @@
         <label class="form-check-label" for="viewSwitch">Switch view</label>
     </div>
     <form method="GET" action="{{ url_for('home')}}">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+        <div class="col-md-6 form-group">            
+                {{ form.current_address.label(class="form-control-label") }}
+                {% if form.current_address.errors %}
+                    {{ form.current_address(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.current_address.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    {{ form.current_address(class="form-control") }}
+                {% endif %} 
+        </div>        
+        <!-- hidden form field that preserves the current value of view when the form is submitted-->
          <input type="hidden" name="view" value="{{ view }}">
-         <div class="row g-2">
+         <div class="row g-2 form-group">
             <div class="col-md-3 ">            
                 {{ form.title_word.label(class="form-control-label") }}
                 {{ form.title_word(class="form-control") }}
@@ -26,6 +42,7 @@
                 {{ form.submit(class="btn btn-info") }}
             </div>
          </div>
+        </fieldset>
     </form>
     {% if view == 'map' %}
     <div class="py-3">
@@ -39,8 +56,19 @@
         </script>
 
         <script>
-            // Initialize map (centered at lat, lon with zoom level)
-            const map = L.map('map').setView([52.519988698413464, 13.405002043621247], 11); // 
+            // Get coordinates from Flask (null if none)
+            const currentCoordinates = {{ current_coordinates | tojson }};
+            let mapCenter;
+
+            if (currentCoordinates) {
+                mapCenter = [
+                    currentCoordinates.lat, currentCoordinates.lon
+                ];
+            } else {
+                // Default center
+                mapCenter = [52.519988698413464, 13.405002043621247];
+            };
+            const map = L.map('map').setView(mapCenter, 11);
 
             // Add OSM tile layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
