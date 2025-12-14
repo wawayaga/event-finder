@@ -26,15 +26,11 @@
         <!-- hidden form field that preserves the current value of view when the form is submitted-->
          <input type="hidden" name="view" value="{{ view }}">
          <div class="row g-2 form-group">
-            <div class="col-md-3 ">            
+            <div class="col-md-4 ">            
                 {{ form.title_word.label(class="form-control-label") }}
                 {{ form.title_word(class="form-control") }}
             </div>
-            <div class="col-md-3 ">
-                {{ form.city.label(class="form-control-label") }}
-                {{ form.city(class="form-control") }}
-            </div>
-            <div class="col-md-3 ">
+            <div class="col-md-4 ">
                 {{ form.category.label(class="form-control-label") }}
                 {{ form.category(class="form-control") }}
             </div>

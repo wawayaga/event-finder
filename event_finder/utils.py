@@ -7,4 +7,4 @@ def get_coordinates(address):
     if location == None:
         return None
     else:
-        return [location.raw['lat'], location.raw['lon']]
+        return [location.raw['lat'], location.raw['lon'], location.raw['address']['city']]

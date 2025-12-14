@@ -6,6 +6,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 from flask_wtf.file import FileField, FileAllowed
 from event_finder.models import User #only user is imported for validation purposes
 from event_finder.utils import get_coordinates
+from geopy.exc import GeocoderServiceError, GeocoderTimedOut, GeocoderQueryError
 
 
 class RegistrationForm(FlaskForm):
@@ -77,9 +78,8 @@ class PostForm(FlaskForm):
     submit = SubmitField('Post')
 
 class PostFilterForm(FlaskForm):
-    current_address = StringField('Insert your current address', validators=[DataRequired()])
+    current_address = StringField('Insert your current address/city', validators=[Optional()])
     title_word = StringField('Word in Title')
-    city = StringField('City')
     category = SelectField(choices=[(0, 'All'),
         (7, 'Arts and crafts'),
         (2, 'Boardgames'),
@@ -97,10 +97,13 @@ class PostFilterForm(FlaskForm):
 
     
     def validate_current_address(self, field):
-        if not field.data or not field.data.strip():
-            raise ValidationError('Please enter an address')
 
-        coords = get_coordinates(field.data)
+        if not field.data or not field.data.strip():
+            return
+        try:
+            coords = get_coordinates(field.data)
+        except (GeocoderServiceError, GeocoderTimedOut, GeocoderQueryError):
+            raise ValidationError("Geocoding service error. Please try again later.")
 
         if coords is None:
             raise ValidationError('Address could not be found')

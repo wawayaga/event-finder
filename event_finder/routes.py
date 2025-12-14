@@ -17,21 +17,19 @@ def home():
     query = Post.query
     cc = None
 #Query only future in the next 3 weeks
+    if form:
+        if form.title_word.data:
+            query = query.filter(Post.title.ilike(f"%{form.title_word.data}%"))
+        if form.category.data:
+            query = query.filter_by(category_id=form.category.data)    
     if form.validate():  #validate is for GET method. Validate_on_submit is only for POST
-        current_coordinates = get_coordinates(form.current_address.data)
+        current_coordinates = getattr(form, 'current_coordinates', None)
         if current_coordinates:
             cc = {
                     "lat" : current_coordinates[0],
                     "lon" : current_coordinates[1]
                 }
-    if form:
-        if form.title_word.data:
-            query = query.filter(Post.title.ilike(f"%{form.title_word.data}%"))
-        if form.city.data:
-            query = query.filter(Post.address.ilike(f"%{form.city.data}%"))
-        if form.category.data:
-            query = query.filter_by(category_id=form.category.data)
-        
+            query = query.filter(Post.address.ilike(f"%{current_coordinates[2]}%"))    
 
     if view == "map":
 
