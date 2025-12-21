@@ -9,6 +9,11 @@ env/
 .vscode/
 .idea/
 
-#others
-migrations/*
+# Alembic / migrations
+migrations/__pycache__/
+migrations/**/__pycache__/
+*.pyc
 
+#others
+.env
+instance/

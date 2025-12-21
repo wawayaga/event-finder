@@ -42,7 +42,7 @@ class Post(db.Model):
     category_id = db.Column(db.Integer,
                             db.ForeignKey('category.id'),
                             name='fk_post_category',
-                            nullable=False)
+                            nullable=True)
 
     def __repr__(self): #this is a magic method. This one specifically specifies how a user object should be printed out
         return f"Post('{self.title}', '{self.address}', '{self.event_date}')"
