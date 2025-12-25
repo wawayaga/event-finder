@@ -130,8 +130,3 @@ Social sharing integration
 📄 License
 
 This project is released under the MIT License.
-
-
-👤 Author
-
-Developed by Mariana Letelier
