@@ -38,16 +38,23 @@ Sidequest is a Flask-based event finder web application where users can create, 
 
 event-finder/
 │
+
+├── static/
+│ ├── profile_pics/
+│ ├── event_pics/
+│ ├── main.css
+|
+├── templates/
 ├── event_finder/ # Flask application package
 │ ├── routes.py
 │ ├── models.py
 │ ├── forms.py
-│ ├── templates/
-│ └── static/
+│ ├── utils.py
+│ └── __init__.py
 │
 ├── migrations/ # Alembic migrations
 ├── requirements.txt
-├── wsgi.py
+├── run.py
 └── README.md
 
 
