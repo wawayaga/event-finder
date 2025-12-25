@@ -16,4 +16,6 @@ migrations/**/__pycache__/
 
 #others
 .env
-instance/
+instance/*
+event_finder/static/event_pics/
+event_finder/static/profile_pics/
