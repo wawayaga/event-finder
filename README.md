@@ -94,3 +94,44 @@ flask run
 The app will be available at:
 
 http://127.0.0.1:8080
+
+🗺️ Map Integration
+
+Sidequest integrates Leaflet.js with OpenStreetMap to provide a dynamic map view where users can visually explore events based on location.
+
+📱 Responsive Design
+
+The interface is fully responsive and optimized for mobile devices, ensuring smooth navigation and usability on smartphones and tablets.
+
+---
+
+🔐 Security & Validation
+
+Server-side form validation using WTForms
+
+Clear user feedback messages for successful actions and errors
+
+Sensitive configuration handled via environment variables
+
+
+📌 Roadmap / Future Improvements
+
+Advanced filtering (date ranges, distance radius)
+
+User profiles with event history
+
+Event image uploads
+
+Email notifications
+
+Social sharing integration
+
+
+📄 License
+
+This project is released under the MIT License.
+
+
+👤 Author
+
+Developed by Mariana Letelier
